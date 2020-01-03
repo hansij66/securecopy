@@ -1,0 +1,42 @@
+--- local.mk.org	2019-03-04 09:36:33.000000000 +0100
++++ local.mk	2019-12-30 19:54:44.255981037 +0100
+@@ -216,12 +216,19 @@
+ src_dir_LDADD = $(src_ls_LDADD)
+ src_vdir_LDADD = $(src_ls_LDADD)
+ 
++src_crccp_LDADD  = $(LDADD)
++src_crcmv_LDADD  = $(LDADD)
++src_crcsum_LDADD = $(LDADD)
++
+ src_cp_LDADD += $(copy_ldadd)
+ src_ginstall_LDADD += $(copy_ldadd)
+ src_mv_LDADD += $(copy_ldadd)
+ 
+ src_mv_LDADD += $(remove_ldadd)
+ src_rm_LDADD += $(remove_ldadd)
++src_crccp_LDADD  += $(copy_ldadd)
++src_crcmv_LDADD  += $(copy_ldadd)
++src_crcmv_LDADD  += $(remove_ldadd)
+ 
+ # for eaccess, euidaccess
+ copy_ldadd += $(LIB_EACCESS)
+@@ -328,6 +335,8 @@
+ copy_sources = \
+   src/copy.c \
+   src/cp-hash.c \
++  src/crcsum.c \
++  src/crc64.c \
+   src/extent-scan.c \
+   src/extent-scan.h \
+   src/force-link.c \
+@@ -421,6 +430,10 @@
+ 
+ src_ginstall_CPPFLAGS = -DENABLE_MATCHPATHCON=1 $(AM_CPPFLAGS)
+ 
++src_crccp_SOURCES  = src/crccp.c $(copy_sources) $(selinux_sources)
++src_crcmv_SOURCES  = src/crcmv.c src/remove.c $(copy_sources) $(selinux_sources)
++src_crcsum_SOURCES = src/crcsum_cli.c src/crcsum.c src/crc64.c
++
+ src_expand_SOURCES = src/expand.c src/expand-common.c
+ src_unexpand_SOURCES = src/unexpand.c src/expand-common.c
+ 

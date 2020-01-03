@@ -1,0 +1,81 @@
+--- cp.c	2019-01-05 11:36:22.000000000 +0100
++++ crccp.c	2019-12-30 19:26:49.378834295 +0100
+@@ -41,12 +41,14 @@
+ #endif
+ 
+ /* The official name of this program (e.g., no 'g' prefix).  */
+-#define PROGRAM_NAME "cp"
++#define PROGRAM_NAME "crccp"
+ 
+ #define AUTHORS \
+   proper_name ("Torbjorn Granlund"), \
+   proper_name ("David MacKenzie"), \
+-  proper_name ("Jim Meyering")
++  proper_name ("Jim Meyering"), \
++  proper_name ("Hans IJntema (checksum functionality)")
++
+ 
+ /* Used by do_copy, make_dir_parents_private, and re_protect
+    to keep a list of leading directories whose protections
+@@ -110,6 +112,7 @@
+   {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
+   {"backup", optional_argument, NULL, 'b'},
+   {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
++  {"crc", optional_argument, NULL, 'c'},
+   {"dereference", no_argument, NULL, 'L'},
+   {"force", no_argument, NULL, 'f'},
+   {"interactive", no_argument, NULL, 'i'},
+@@ -164,6 +167,11 @@
+ \n\
+   -b                           like --backup but does not accept an argument\n\
+       --copy-contents          copy contents of special files when recursive\n\
++  -c --crc[=x]                 check whether copy was successfull with checksum comparison\n\
++                               x: use (fresh) checksum stored in xattr or if not present,\n\
++                               store checksum in xattr\n\
++                               See also tool <crcsum> in same secure copy package\n\
++                               implies --preserve=all\n\
+   -d                           same as --no-dereference --preserve=links\n\
+ "), stdout);
+       fputs (_("\
+@@ -785,6 +793,8 @@
+ {
+   cp_options_default (x);
+   x->copy_as_regular = true;
++  x->crc = false;
++  x->crc_with_xattr = false;
+   x->dereference = DEREF_UNDEFINED;
+   x->unlink_dest_before_opening = false;
+   x->unlink_dest_after_failed_open = false;
+@@ -990,6 +1000,32 @@
+             version_control_string = optarg;
+           break;
+ 
++        case 'c':
++          if (optarg)
++          {
++            if ( strcmp( optarg, "x") == 0 )
++            {
++              x.crc_with_xattr = true;
++              x.crc = false;
++
++              // will this stick if --no-preserve=xattr?
++              x.preserve_mode = true;
++              x.preserve_timestamps = true;
++              x.preserve_ownership = true;
++              x.preserve_links = true;
++              x.explicit_no_preserve_mode = false;
++              if (selinux_enabled)
++                x.preserve_security_context = true;
++              x.preserve_xattr = true;
++            }
++          }
++          else
++          {
++            x.crc = true;
++            x.crc_with_xattr = false;
++          }
++          break;
++
+         case ATTRIBUTES_ONLY_OPTION:
+           x.data_copy_required = false;
+           break;

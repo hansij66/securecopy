@@ -1,0 +1,15 @@
+--- copy.h.org	2019-01-05 11:36:22.000000000 +0100
++++ copy.h	2019-12-30 19:38:49.163345346 +0100
+@@ -102,6 +102,12 @@
+   /* How to handle symlinks in the source.  */
+   enum Dereference_symlink dereference;
+ 
++  /* Use CRC checksum to verify whether destination copy is same as source */
++  bool crc;
++
++  /* As crc, nut use xattr to get (fresh) crc or if empty/stale, update crc */
++  bool crc_with_xattr;
++
+   /* This value is used to determine whether to prompt before removing
+      each existing destination file.  It works differently depending on
+      whether move_mode is set.  See code/comments in copy.c.  */

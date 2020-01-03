@@ -1,0 +1,12 @@
+--- cu-progs.m4.org	2019-03-10 23:26:56.000000000 +0100
++++ cu-progs.m4	2019-12-30 19:43:20.638468574 +0100
+@@ -94,6 +94,9 @@
+ gl_ADD_PROG([optional_bin_progs], [wc])
+ gl_ADD_PROG([optional_bin_progs], [whoami])
+ gl_ADD_PROG([optional_bin_progs], [yes])
++gl_ADD_PROG([optional_bin_progs], [crccp])
++gl_ADD_PROG([optional_bin_progs], [crcsum])
++gl_ADD_PROG([optional_bin_progs], [crcmv])
+ no_install_progs_default='arch coreutils hostname'
+ # Given the name of a variable containing a space-separated
+ # list of install-by-default programs and the actual list of

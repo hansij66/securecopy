@@ -1,0 +1,10 @@
+--- cu-progs.mk.org	2019-03-10 23:26:56.000000000 +0100
++++ cu-progs.mk	2019-12-30 19:46:38.935949709 +0100
+@@ -112,3 +112,7 @@
+ default__progs += src/wc
+ default__progs += src/whoami
+ default__progs += src/yes
++default__progs += src/crccp
++default__progs += src/crcsum
++default__progs += src/crcmv
++

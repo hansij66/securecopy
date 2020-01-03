@@ -1,0 +1,161 @@
+--- copy.c.org	2019-01-05 11:36:22.000000000 +0100
++++ copy.c	2019-12-30 19:38:05.640751642 +0100
+@@ -66,6 +66,8 @@
+ #include "yesno.h"
+ #include "selinux.h"
+ 
++#include "crcsum.h"
++
+ #if USE_XATTR
+ # include <attr/error_context.h>
+ # include <attr/libattr.h>
+@@ -1029,10 +1031,58 @@
+   struct stat src_open_sb;
+   bool return_val = true;
+   bool data_copy_required = x->data_copy_required;
++  t_crc64 crc_src = 0;
+ 
+   source_desc = open (src_name,
+                       (O_RDONLY | O_BINARY
+                        | (x->dereference == DEREF_NEVER ? O_NOFOLLOW : 0)));
++
++  // Checksum
++  if (x->crc)
++  {
++    crc_src = CalculateCRC64(src_name);
++    if (x->verbose)
++    {
++      char* szCRC;
++      asprintf(&szCRC, "%016llX", crc_src);
++
++      printf("[%s]", szCRC);
++    }
++  }
++
++  if (x->crc_with_xattr)
++  {
++    if ( !IsFreshCRC(src_name) ) // UPDATE CRC when stale
++    {
++      // suppress errors writing crc in souce xattr, as file can be read only
++      bool bError = false;
++
++      // CRC is stale & get new CRC
++      if ( !bPutCRC(src_name, &crc_src, bError) )
++      {
++        // Don't print an error, as source file can be a read only file, which is a legitimate use case
++        // printStatus(src_name, "FAILED to update CRC", RED);
++      }
++      else if (x->verbose)
++      {
++        textcolor(BRIGHT,YELLOW,BLACK);
++        printf("Updated CRC");
++        RESET_TEXT();
++      }
++    }
++    else
++    {
++      crc_src = getCRC(src_name);
++    }
++
++    if (x->verbose)
++    {
++      char* szCRC;
++      asprintf(&szCRC, "%016llX", crc_src);
++      printf("[%s]", szCRC);
++    }
++  }
++
+   if (source_desc < 0)
+     {
+       error (0, errno, _("cannot open %s for reading"), quoteaf (src_name));
+@@ -1410,6 +1460,90 @@
+       return_val = false;
+     }
+ 
++  // Checksum
++  // only if copy itself is successfull
++  if (( return_val != false ) && ( ( x->crc ) || (x->crc_with_xattr) ))
++  {
++    t_crc64 crc_des = 0;
++
++    //ONLY for testing
++    //printf("WAIT\n");
++    //getchar();
++
++    crc_des = CalculateCRC64(dst_name);
++
++    if (crc_des != crc_src)
++    {
++      if (!x->verbose)
++      {
++        printf("%s ", src_name);
++      }
++      textcolor(BRIGHT,RED,BLACK);
++      if (x->verbose)
++      {
++        char* szCRC;
++        asprintf(&szCRC, "%016llX", crc_des);
++        printf("[%s]", szCRC);
++      }
++
++      // when using crc from stored xattr, it can happen that in very specific cases
++      // that src_file CRC is not flagged as stale, but file did change.
++      // Either by disk faults (bad) or file has been changed w/o updating mtime (not so bad)
++      // Example: Office 2003 is known to update Excel files even when they are not saved
++      // Office 2003 does update an internal atime in the excel file w/o updating file's mtime
++      if (x->crc_with_xattr)
++      {
++        crc_src = CalculateCRC64(src_name);
++
++        // initially, there was a crc mismath based on stored crc in xattr. We have re-calculated the source crc
++        if (crc_des == crc_src)
++        {
++          textcolor(BRIGHT,YELLOW,BLACK);
++          printf("\nSRC == DES; But, stored CRC of SRC file does not match actual CRC of SRC file\n");
++
++          // setting to false ensures that when called from crcmv, SRC will not be removed
++          return_val = false;
++        }
++        else
++        {
++          printf(":Checksum FAILED\n");
++          return_val = false;
++        }
++      }
++      else
++      {
++        printf(":Checksum FAILED\n");
++        return_val = false;
++      }
++    }
++    else if (x->verbose)
++    {
++      char* szCRC;
++      asprintf(&szCRC, "%016llX", crc_des);
++      textcolor(BRIGHT,GREEN,BLACK);
++      printf("[%s]\n", szCRC);
++    }
++    RESET_TEXT();
++
++    // check if crc is stored in DES xattr (as SRC might be read only)
++    if ( return_val == true && x->crc_with_xattr )
++    {
++      if ( !IsFreshCRC(dst_name) ) // UPDATE CRC when stale
++      {
++        // suppress errors writing crc in souce xattr, as destination file can be read only (-r--r--r--)
++        bool bError = false;
++
++        // CRC is stale, write the already calculated crc
++        if ( !bPutCRC(dst_name, &crc_des, bError) )
++        {
++          // as this is not a fatal error, mark it as yellow
++          printStatus(dst_name, "FAILED to update CRC in xattr", YELLOW);
++          RESET_TEXT();
++        }
++      }
++    }
++  }
++
+   free (buf_alloc);
+   free (name_alloc);
+   return return_val;

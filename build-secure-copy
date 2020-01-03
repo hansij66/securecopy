@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# run as root
+
+# assumption is that coreutils-8.31.tar.xz is located in current directory
+
+# TODO https://www.tecmint.com/advanced-copy-command-shows-progress-bar-while-copying-files/
+
+
+# directory where crccp, crcmv and crcsum will be copied
+# remained for core utils will not be installed!
+TARGETDIR="/opt"
+
+# Target coreutils (tested version)
+COREUTILS="coreutils-8.31"
+
+# Internal for this script
+CURRENTDIR=${PWD}
+
+
+# required on debian buster
+# Can be commented-out after first run
+apt-get install automake-1.15
+
+# Coreutils
+# Can be commented-out after first run
+wget -v -O ${CURRENTDIR}/${COREUTILS}.tar.xz  https://ftp.gnu.org/gnu/coreutils/${COREUTILS}.tar.xz
+
+# Extract
+rm -rf ${CURRENTDIR}/${COREUTILS}
+
+cd ${CURRENTDIR}
+tar -xvf ${COREUTILS}.tar.xz
+
+
+# Install Securecopy files
+cd ${CURRENTDIR}/src
+cp crc64.* crcsum.* crcsum_cli.c ${CURRENTDIR}/${COREUTILS}/src/
+cp *.x ${CURRENTDIR}/${COREUTILS}/man/
+
+cd ${CURRENTDIR}/${COREUTILS}/src
+cp mv.c crcmv.c
+cp cp.c crccp.c
+cp copy.c copy.c.org
+cp copy.h copy.h.org
+cp cu-progs.mk cu-progs.mk.org
+cp local.mk local.mk.patch.org
+
+patch copy.c ${CURRENTDIR}/src/copy.c.patch
+patch copy.h ${CURRENTDIR}/src/copy.h.patch
+patch crccp.c ${CURRENTDIR}/src/crccp.patch
+patch crcmv.c ${CURRENTDIR}/src/crcmv.patch
+patch cu-progs.mk ${CURRENTDIR}/src/cu-progs.mk.patch
+patch local.mk ${CURRENTDIR}/src/local.mk.patch
+
+cd ${CURRENTDIR}/${COREUTILS}/m4
+cp cu-progs.m4 cu-progs.m4.org
+patch cu-progs.m4 ${CURRENTDIR}/src/cu-progs.m4.patch
+
+# Sometimes required:
+#cd ${CURRENTDIR}/${COREUTILS}
+#make distclean
+
+# Configure
+cd ${CURRENTDIR}/${COREUTILS}
+export FORCE_UNSAFE_CONFIGURE=1
+./configure
+make
+
+cd ${CURRENTDIR}/${COREUTILS}/src
+cp   crccp crcmv crcsum  ${TARGETDIR}/
+
+
+echo "++++++++++++++++++++++++++++++++++++"
+echo "OPTIONAL: Add to ~/.bashrc:"
+echo   "alias cp='${TARGETDIR}/crccp -cx'"
+echo   "alias mv='${TARGETDIR}/crcmv -cx'"
+echo   "alias crcsum='${TARGETDIR}/crcsum'"

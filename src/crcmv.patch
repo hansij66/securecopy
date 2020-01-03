@@ -1,0 +1,83 @@
+--- mv.c	2019-01-05 11:36:22.000000000 +0100
++++ crcmv.c	2019-12-30 19:29:48.968962264 +0100
+@@ -35,13 +35,17 @@
+ #include "root-dev-ino.h"
+ #include "priv-set.h"
+ 
++#include "crcsum.h"
++
+ /* The official name of this program (e.g., no 'g' prefix).  */
+-#define PROGRAM_NAME "mv"
++#define PROGRAM_NAME "crcmv"
+ 
+ #define AUTHORS \
+   proper_name ("Mike Parker"), \
+   proper_name ("David MacKenzie"), \
+-  proper_name ("Jim Meyering")
++  proper_name ("Jim Meyering"), \
++  proper_name ("Hans IJntema (checksum functionality)")
++
+ 
+ /* For long options that have no equivalent short option, use a
+    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+@@ -56,6 +60,7 @@
+ static struct option const long_options[] =
+ {
+   {"backup", optional_argument, NULL, 'b'},
++  {"crc", optional_argument, NULL, 'c'},
+   {"context", no_argument, NULL, 'Z'},
+   {"force", no_argument, NULL, 'f'},
+   {"interactive", no_argument, NULL, 'i'},
+@@ -110,6 +115,8 @@
+ 
+   cp_options_default (x);
+   x->copy_as_regular = false;  /* FIXME: maybe make this an option */
++  x->crc = false;
++  x->crc_with_xattr = false;
+   x->reflink_mode = REFLINK_AUTO;
+   x->dereference = DEREF_NEVER;
+   x->unlink_dest_before_opening = false;
+@@ -305,6 +312,11 @@
+       --backup[=CONTROL]       make a backup of each existing destination file\
+ \n\
+   -b                           like --backup but does not accept an argument\n\
++  -c --crc[=x]                 check whether copy was successfull with checksum comparison\n\
++                               x: use (fresh) checksum stored in xattr or if not present,\n\
++                               store checksum in xattr\n\
++                               See also tool <crcsum> in same secure copy package\n\
++                               implies --preserve=xattr\n\
+   -f, --force                  do not prompt before overwriting\n\
+   -i, --interactive            prompt before overwrite\n\
+   -n, --no-clobber             do not overwrite an existing file\n\
+@@ -371,6 +383,31 @@
+           if (optarg)
+             version_control_string = optarg;
+           break;
++        case 'c':
++          if (optarg)
++          {
++            if ( strcmp( optarg, "x") == 0 )
++            {
++              x.crc_with_xattr = true;
++              x.crc = false;
++
++              // will this stick if --no-preserve=xattr?
++              x.preserve_mode = true;
++              x.preserve_timestamps = true;
++              x.preserve_ownership = true;
++              x.preserve_links = true;
++              x.explicit_no_preserve_mode = false;
++              if (selinux_enabled)
++                x.preserve_security_context = true;
++              x.preserve_xattr = true;
++            }
++          }
++          else
++          {
++            x.crc = true;
++            x.crc_with_xattr = false;
++          }
++          break;
+         case 'f':
+           x.interactive = I_ALWAYS_YES;
+           break;
