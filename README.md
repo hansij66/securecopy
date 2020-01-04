@@ -23,19 +23,15 @@ This package is tested on Debian buster
 ## Deployment
 
 Add to ~/.bashrc:"
-alias cp='TARGETDIR/crccp -cx'
-alias mv='$TARGETDIR/crcmv -cx'
-alias crcsum='$TARGETDIR/crcsum'
-(replace TARGETDIR with actual location)
+* alias cp='TARGETDIR/crccp -cx'
+* alias mv='$TARGETDIR/crcmv -cx'
+* alias crcsum='$TARGETDIR/crcsum'
+* (replace TARGETDIR with actual location)
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
-
 * V2.0: based on core utils v8.31 
-*[Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)
+* [Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)
 
 ## Authors
 
