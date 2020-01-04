@@ -24,8 +24,8 @@ This package is tested on Debian buster
 
 Add to ~/.bashrc:"
 * alias cp='TARGETDIR/crccp -cx'
-* alias mv='$TARGETDIR/crcmv -cx'
-* alias crcsum='$TARGETDIR/crcsum'
+* alias mv='TARGETDIR/crcmv -cx'
+* alias crcsum='TARGETDIR/crcsum'
 * (replace TARGETDIR with actual location)
 
 
