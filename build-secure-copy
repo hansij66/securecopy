@@ -9,7 +9,7 @@
 
 # directory where crccp, crcmv and crcsum will be copied
 # remained for core utils will not be installed!
-TARGETDIR="/opt"
+TARGETDIR="${PWD}/bin"
 
 # Target coreutils (tested version)
 COREUTILS="coreutils-8.31"
