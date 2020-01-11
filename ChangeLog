@@ -17,5 +17,5 @@
         version 8.31 (coreutils) - 2.0.0 (securecopy)
 
         - Upgraded to be based on coreutils 8.31
-	- Moved from sf.org to github
+	- Moved from sf.net to github
 
