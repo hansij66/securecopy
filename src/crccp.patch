@@ -1,5 +1,5 @@
 --- cp.c	2019-01-05 11:36:22.000000000 +0100
-+++ crccp.c	2019-12-30 19:26:49.378834295 +0100
++++ crccp.c	2020-01-11 12:26:00.147729953 +0100
 @@ -41,12 +41,14 @@
  #endif
  
@@ -46,6 +46,15 @@
    x->dereference = DEREF_UNDEFINED;
    x->unlink_dest_before_opening = false;
    x->unlink_dest_after_failed_open = false;
+@@ -950,7 +960,7 @@
+   selinux_enabled = (0 < is_selinux_enabled ());
+   cp_option_init (&x);
+ 
+-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
++  while ((c = getopt_long (argc, argv, "abcdfHilLnprst:uvxPRS:TZ",
+                            long_opts, NULL))
+          != -1)
+     {
 @@ -990,6 +1000,32 @@
              version_control_string = optarg;
            break;

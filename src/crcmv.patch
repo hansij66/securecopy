@@ -1,5 +1,5 @@
 --- mv.c	2019-01-05 11:36:22.000000000 +0100
-+++ crcmv.c	2019-12-30 19:29:48.968962264 +0100
++++ crcmv.c	2020-01-11 12:26:12.303334554 +0100
 @@ -35,13 +35,17 @@
  #include "root-dev-ino.h"
  #include "priv-set.h"
@@ -49,6 +49,15 @@
    -f, --force                  do not prompt before overwriting\n\
    -i, --interactive            prompt before overwrite\n\
    -n, --no-clobber             do not overwrite an existing file\n\
+@@ -361,7 +373,7 @@
+   /* Try to disable the ability to unlink a directory.  */
+   priv_set_remove_linkdir ();
+ 
+-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
++  while ((c = getopt_long (argc, argv, "bcfint:uvS:TZ", long_options, NULL))
+          != -1)
+     {
+       switch (c)
 @@ -371,6 +383,31 @@
            if (optarg)
              version_control_string = optarg;
