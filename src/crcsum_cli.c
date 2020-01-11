@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
       case 'd' :
         flags |= VERBOSE;
 	    flags |= DEBUG;
-	    break;        
-        
+	    break;
+
       case '?' :
 	    puts("Unknown option.");
 	    puts("");

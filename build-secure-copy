@@ -26,12 +26,12 @@ apt-get install automake-1.15
 # Can be commented-out after first run
 wget -v -O ${CURRENTDIR}/${COREUTILS}.tar.xz  https://ftp.gnu.org/gnu/coreutils/${COREUTILS}.tar.xz
 
-# Extract
+# Clean source directory
 rm -rf ${CURRENTDIR}/${COREUTILS}
 
+# Extract Coreutils
 cd ${CURRENTDIR}
 tar -xvf ${COREUTILS}.tar.xz
-
 
 # Install Securecopy files
 cd ${CURRENTDIR}/src
@@ -57,6 +57,14 @@ cd ${CURRENTDIR}/${COREUTILS}/m4
 cp cu-progs.m4 cu-progs.m4.org
 patch cu-progs.m4 ${CURRENTDIR}/src/cu-progs.m4.patch
 
+# Combine version number from coreutils and securecopy
+version_crc=$( cat ${CURRENTDIR}/.version )
+version_gnu=$( cat ${CURRENTDIR}/${COREUTILS}/.version )
+version="[${version_gnu}-${version_crc}]"
+
+echo "${version_gnu}-${version_crc}" > ${CURRENTDIR}/${COREUTILS}/.version
+sed -i "s/m4_esyscmd(\[build-aux\/git-version-gen .tarball-version\])/${version}/g" ${CURRENTDIR}/${COREUTILS}/configure.ac
+
 # Sometimes required:
 #cd ${CURRENTDIR}/${COREUTILS}
 #make distclean
@@ -69,7 +77,7 @@ make
 
 cd ${CURRENTDIR}/${COREUTILS}/src
 cp   crccp crcmv crcsum  ${TARGETDIR}/
-
+echo "crccp crcmv and crcsum copied to ${TARGETDIR}"
 
 echo "++++++++++++++++++++++++++++++++++++"
 echo "OPTIONAL: Add to ~/.bashrc:"

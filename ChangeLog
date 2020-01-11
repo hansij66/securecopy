@@ -1,5 +1,12 @@
 2019-01-11  Hans IJntema <hans66 at gmail dot com>
 
+        version 8.31 (coreutils) - 2.0.2 (securecopy)
+
+	- Added securecopy version number to reporting (eg crccp --version)
+
+
+2019-01-11  Hans IJntema <hans66 at gmail dot com>
+
         version 8.31 (coreutils) - 2.0.1 (securecopy)
 
 	- Fix -c argument parsing; 
