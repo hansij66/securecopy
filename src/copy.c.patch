@@ -1,5 +1,5 @@
---- copy.c.org	2019-01-05 11:36:22.000000000 +0100
-+++ copy.c	2019-12-30 19:38:05.640751642 +0100
+--- copy.c.org	2020-01-14 20:37:56.970714772 +0100
++++ copy.c	2020-01-14 21:36:55.223397266 +0100
 @@ -66,6 +66,8 @@
  #include "yesno.h"
  #include "selinux.h"
@@ -9,7 +9,7 @@
  #if USE_XATTR
  # include <attr/error_context.h>
  # include <attr/libattr.h>
-@@ -1029,10 +1031,58 @@
+@@ -1029,10 +1031,67 @@
    struct stat src_open_sb;
    bool return_val = true;
    bool data_copy_required = x->data_copy_required;
@@ -26,9 +26,13 @@
 +    if (x->verbose)
 +    {
 +      char* szCRC;
-+      asprintf(&szCRC, "%016llX", crc_src);
++      int   ret;
++      ret = asprintf(&szCRC, "%016llX", crc_src);
 +
-+      printf("[%s]", szCRC);
++      if ( ret != -1)
++      {
++        printf("[%s]", szCRC);
++      }
 +    }
 +  }
 +
@@ -60,15 +64,20 @@
 +    if (x->verbose)
 +    {
 +      char* szCRC;
-+      asprintf(&szCRC, "%016llX", crc_src);
-+      printf("[%s]", szCRC);
++      int   ret;
++      ret = asprintf(&szCRC, "%016llX", crc_src);
++
++      if ( ret != -1)
++      {
++        printf("[%s]", szCRC);
++      }
 +    }
 +  }
 +
    if (source_desc < 0)
      {
        error (0, errno, _("cannot open %s for reading"), quoteaf (src_name));
-@@ -1410,6 +1460,90 @@
+@@ -1410,6 +1469,99 @@
        return_val = false;
      }
  
@@ -94,8 +103,12 @@
 +      if (x->verbose)
 +      {
 +        char* szCRC;
-+        asprintf(&szCRC, "%016llX", crc_des);
-+        printf("[%s]", szCRC);
++        int   ret;
++        ret = asprintf(&szCRC, "%016llX", crc_des);
++        if ( ret != -1)
++        {
++          printf("[%s]", szCRC);
++        }
 +      }
 +
 +      // when using crc from stored xattr, it can happen that in very specific cases
@@ -131,9 +144,14 @@
 +    else if (x->verbose)
 +    {
 +      char* szCRC;
-+      asprintf(&szCRC, "%016llX", crc_des);
-+      textcolor(BRIGHT,GREEN,BLACK);
-+      printf("[%s]\n", szCRC);
++      int   ret;
++      ret = asprintf(&szCRC, "%016llX", crc_des);
++
++      if ( ret != -1)
++      {
++        textcolor(BRIGHT,GREEN,BLACK);
++        printf("[%s]\n", szCRC);
++      }
 +    }
 +    RESET_TEXT();
 +

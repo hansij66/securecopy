@@ -20,7 +20,7 @@ CURRENTDIR=${PWD}
 
 # required on debian buster
 # Can be commented-out after first run
-apt-get install automake-1.15
+apt-get install automake-1.15 texinfo
 
 # Coreutils
 # Can be commented-out after first run
