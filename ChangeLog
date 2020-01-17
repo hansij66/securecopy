@@ -1,3 +1,11 @@
+2019-01-17  Hans IJntema <hans66 at gmail dot com>
+
+        version 8.31 (coreutils) - 2.0.4 (securecopy)
+
+        - Fixed -cx argument parsing;
+	- NOTE: crcmv -cx does not work currently; crccp -cx is fine
+
+
 2019-01-14  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.3 (securecopy)

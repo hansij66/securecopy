@@ -51,7 +51,7 @@
    cp_option_init (&x);
  
 -  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
-+  while ((c = getopt_long (argc, argv, "abcdfHilLnprst:uvxPRS:TZ",
++  while ((c = getopt_long (argc, argv, "abc::dfHilLnprst:uvxPRS:TZ",
                             long_opts, NULL))
           != -1)
      {

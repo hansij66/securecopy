@@ -54,7 +54,7 @@
    priv_set_remove_linkdir ();
  
 -  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
-+  while ((c = getopt_long (argc, argv, "bcfint:uvS:TZ", long_options, NULL))
++  while ((c = getopt_long (argc, argv, "bc::fint:uvS:TZ", long_options, NULL))
           != -1)
      {
        switch (c)

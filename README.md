@@ -4,6 +4,12 @@ crccp and crcmv are based on GNU coreutils and add crc checksum functionality to
 Checksums can optionally be stored in the file's xattr. 
 The command crcsum can be used for further checksum analysis/verification, or for storing a checksum in the xattr of all files in a directory or filesystem.
 
+Jan 17 2020:
+crcmv seems not to work (due to migrate from old coreutils to new coreutils)
+crccp works fine
+I'll to to fix asap
+
+
 ## Getting Started
 
 This package is tested on Debian buster

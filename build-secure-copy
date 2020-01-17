@@ -7,16 +7,22 @@
 # TODO https://www.tecmint.com/advanced-copy-command-shows-progress-bar-while-copying-files/
 
 
-# directory where crccp, crcmv and crcsum will be copied
-# remained for core utils will not be installed!
-TARGETDIR="${PWD}/bin"
+# local system directory where crccp, crcmv and crcsum will be copied
+# remainder ofr core utils will not be installed!
+# Change to meet local system
+TARGETDIR="/opt/ijntema/bin"
 
-# Target coreutils (tested version)
-COREUTILS="coreutils-8.31"
+
+
 
 # Internal for this script
 CURRENTDIR=${PWD}
 
+# bin dir after build
+BINDIR="${CURRENTDIR}/bin"
+
+# Target coreutils (tested version)
+COREUTILS="coreutils-8.31"
 
 # required on debian buster
 # Can be commented-out after first run
@@ -28,6 +34,7 @@ wget -v -O ${CURRENTDIR}/${COREUTILS}.tar.xz  https://ftp.gnu.org/gnu/coreutils/
 
 # Clean source directory
 rm -rf ${CURRENTDIR}/${COREUTILS}
+rm ${CURRENTDIR}/bin/*
 
 # Extract Coreutils
 cd ${CURRENTDIR}
@@ -76,8 +83,24 @@ export FORCE_UNSAFE_CONFIGURE=1
 make
 
 cd ${CURRENTDIR}/${COREUTILS}/src
-cp   crccp crcmv crcsum  ${TARGETDIR}/
-echo "crccp crcmv and crcsum copied to ${TARGETDIR}"
+cp   crccp crcmv crcsum  ${BINDIR}/
+chmod 555 ${BINDIR}/*
+chown root.root ${BINDIR}/*
+echo "crccp crcmv and crcsum copied to ${BINDIR}"
+
+
+#ADD TEST TEST TEST
+
+while true; do
+    read -p "Do you wish to install securecopy tools in ${TARGETDIR}?" yn
+    case $yn in
+        [Yy]* ) sudo /bin/cp ${BINDIR}/* ${TARGETDIR} ; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+
 
 echo "++++++++++++++++++++++++++++++++++++"
 echo "OPTIONAL: Add to ~/.bashrc:"
