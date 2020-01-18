@@ -4,11 +4,6 @@ crccp and crcmv are based on GNU coreutils and add crc checksum functionality to
 Checksums can optionally be stored in the file's xattr. 
 The command crcsum can be used for further checksum analysis/verification, or for storing a checksum in the xattr of all files in a directory or filesystem.
 
-Jan 17 2020:
-crcmv seems not to work (due to migrate from old coreutils to new coreutils)
-crccp works fine
-I'll to to fix asap
-
 
 ## Getting Started
 
@@ -77,10 +72,20 @@ Options :
  -d  Print Debug info. Implies -v
 
 
-Additional flags for crccp and crcmv (compared to cp, mv)
+Additional or relevant flags for crccp and crcmv (compared to cp, mv)
   -c --crc[=x]                 check whether copy was successfull with checksum comparison
-                               x: use (fresh) checksum stored in xattr or if not present,
-                               store checksum in xattr
+                               -c: checksum is not stored in xattr
+
+                               -cx: store or update crc checksum of source file
+                               crc chcksum is copied with source (in xattr) to destination and verified
+
                                See also tool <crcsum> in same secure copy package
                                implies --preserve=all
 
+  -v, --verbose                explain what is being done
+                               display crc's created
+
+
+After a copy or move, integrity of file can be checked (again) with crcsum -c -r <dir>
+
+If a file with crc storedd in xattr has been changed afterwards, crc is flagged as stale, and ignored.

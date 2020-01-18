@@ -1,3 +1,4 @@
 *.tar.xz
 coreutils-8.31/*
 notes.txt
+build-beta
