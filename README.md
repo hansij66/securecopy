@@ -76,8 +76,10 @@ Options :
 
 ```
 Relevant additional or extended flags for crccp and crcmv (compared to cp, mv)
--c,  --crc		Check whether copy was successfull with checksum comparison
--cx, --crc=x	As -c and checksum is stored in xattr of src and dest file (if file is writeable and if filesystem supports xattr); stored crc can be used in a next cp/mv or integrity check with crcsum...bitrot check); implies --preserve=all
+-c,  --crc	Check whether copy was successfull with checksum comparison
+-cx, --crc=x	As -c and checksum is stored in xattr of src and dest file (if file is writeable and if filesystem supports xattr); 
+		Stored crc can be used in a next cp/mv or integrity check with crcsum...bitrot check); 
+		Implies --preserve=all
 -v, --verbose	Explain what is being done and display crc's created
 ```
 After a copy or move, integrity of file can be checked (again) with crcsum -c -r \<directory\>
