@@ -49,8 +49,8 @@ This project is licensed under the GNU General Public License
 
 ## Details
 
+```
 crcsum -h
-
 CRCSUM stores a CRC checksum and file mtime as an extended attribute.
 CRCSUM checks stored CRC checksum against actual CRC checksum
 CRCSUM allows for CRC updates, only when mtime has changed
@@ -59,24 +59,27 @@ Directory & File  SYMLINKS will not be followed.
 NOTE: Some programs do change file content (even w/o saving),
 while mtime is not update. Example, some Microsoft Excel versions
 This will result in false positves when checking file against CRC.
+```
 
+```
 Options :
- -a  Calculate and Add checksum (no overwrite)
- -u  As -a, and Update stale checksum
- -f  As -a, Force overwrite existing checksum
- -c  Check file against stored checksum; stale CRC's are omitted
- -p  Print CRC64 checksum; stale CRC's are omitted; Add -d to print stale and missing CRC's
- -v  Verbose.  Print more information
- -x  Remove stored CRC64 checksum
- -r  Recurse through directories
- -d  Print Debug info. Implies -v
+-a  Calculate and Add checksum (no overwrite)
+-u  As -a, and Update stale checksum
+-f  As -a, Force overwrite existing checksum
+-c  Check file against stored checksum; stale CRC's are omitted
+-p  Print CRC64 checksum; stale CRC's are omitted; Add -d to print stale and missing CRC's
+-v  Verbose.  Print more information
+-x  Remove stored CRC64 checksum
+-r  Recurse through directories
+-d  Print Debug info. Implies -v
+```
 
-
-Additional or relevant flags for crccp and crcmv (compared to cp, mv)
-* -c,  --crc    Check whether copy was successfull with checksum comparison
-* -cx, --crc=x  As -c and checksum is stored in xattr of src and dest file (if file is writeable and if filesystem supports xattr); stored crc can be used in a next cp/mv or integrity check with crcsum...bitrot check); implies --preserve=all
-* -v, --verbose Explain what is being done and display crc's created
-
-After a copy or move, integrity of file can be checked (again) with crcsum -c -r <dir>
+```
+Relevant additional or extended flags for crccp and crcmv (compared to cp, mv)
+-c,  --crc		Check whether copy was successfull with checksum comparison
+-cx, --crc=x	As -c and checksum is stored in xattr of src and dest file (if file is writeable and if filesystem supports xattr); stored crc can be used in a next cp/mv or integrity check with crcsum...bitrot check); implies --preserve=all
+-v, --verbose	Explain what is being done and display crc's created
+```
+After a copy or move, integrity of file can be checked (again) with crcsum -c -r \<directory\>
 
 If a file with crc storedd in xattr has been changed afterwards, crc is flagged as stale, and ignored.
