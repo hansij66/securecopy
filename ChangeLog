@@ -1,3 +1,13 @@
+2019-01-26  Hans IJntema <hans66 at gmail dot com>
+
+        version 8.31 (coreutils) - 2.0.7 (securecopy)
+
+        - Fixed 2GB limitation on 32bit systems;
+	This is tested on 32bit x86
+	To be tested on Raspbian for Raspberry Pi
+	Credits to Jim Cruise for identifying the issue and testing
+
+
 2019-01-19  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.6 (securecopy)

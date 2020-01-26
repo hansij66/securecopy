@@ -21,6 +21,10 @@
 //#define _XOPEN_SOURCE 500  // nftw
 
 
+// to overcome issue with file size & stat limitations on 32 bit systems
+#define _FILE_OFFSET_BITS 64
+
+
 #include <sys/types.h>
 #include <attr/xattr.h>
 #include <fcntl.h>
