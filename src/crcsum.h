@@ -1,7 +1,7 @@
 #ifndef _CRCSUM_H
 #define _CRCSUM_H 1
 
-#include <ftw.h> 
+#include <ftw.h>
 
 #define MAX_BUF_LEN  (65536)
 #define RESET_TEXT()  printf("\033[0;0m")
@@ -31,6 +31,10 @@
 #define PRINT	        0x80
 #define UPDATE          0x100
 #define DEBUG           0x200
+#define OMIT		0x400
+
+// For option -e OMIT
+#define MAXEXT		20
 
 
 typedef unsigned long long t_crc64;

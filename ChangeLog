@@ -1,4 +1,10 @@
-2019-01-26  Hans IJntema <hans66 at gmail dot com>
+2020-06-14
+	version 8.32 (coreutiles) - 2.1.1 (securecopy)
+
+	- Upgraded coreutils
+	- Add -e flag (ignore extension)
+
+2020-01-26  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.7 (securecopy)
 
@@ -8,14 +14,14 @@
 	Credits to Jim Cruise for identifying the issue and testing
 
 
-2019-01-19  Hans IJntema <hans66 at gmail dot com>
+2020-01-19  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.6 (securecopy)
 
         - Updated README
 
 
-2019-01-18  Hans IJntema <hans66 at gmail dot com>
+2020-01-18  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.5 (securecopy)
 
@@ -23,7 +29,7 @@
         - Verified that crcmv does work.
 
 
-2019-01-17  Hans IJntema <hans66 at gmail dot com>
+2020-01-17  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.4 (securecopy)
 
@@ -31,28 +37,28 @@
 	- NOTE: crcmv -cx does not work currently; crccp -cx is fine
 
 
-2019-01-14  Hans IJntema <hans66 at gmail dot com>
+2020-01-14  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.3 (securecopy)
 
         - Fixed compiler warnings on asprintf (credits Jim Cruse)
 
 
-2019-01-11  Hans IJntema <hans66 at gmail dot com>
+2020-01-11  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.2 (securecopy)
 
 	- Added securecopy version number to reporting (eg crccp --version)
 
 
-2019-01-11  Hans IJntema <hans66 at gmail dot com>
+2020-01-11  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.1 (securecopy)
 
 	- Fix -c argument parsing; 
 
 
-2019-01-01  Hans IJntema <hans66 at gmail dot com>
+2020-01-01  Hans IJntema <hans66 at gmail dot com>
 
         version 8.31 (coreutils) - 2.0.0 (securecopy)
 

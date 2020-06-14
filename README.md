@@ -31,6 +31,7 @@ Add to ~/.bashrc:"
 
 
 ## Versioning
+* V2.1: based on core utils v8.32
 * V2.0: based on core utils v8.31 
 * [Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)
 

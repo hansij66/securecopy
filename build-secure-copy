@@ -22,7 +22,7 @@ CURRENTDIR=${PWD}
 BINDIR="${CURRENTDIR}/bin"
 
 # Target coreutils (tested version)
-COREUTILS="coreutils-8.31"
+COREUTILS="coreutils-8.32"
 
 # required on debian buster
 # Can be commented-out after first run

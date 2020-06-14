@@ -34,7 +34,8 @@ void print_help(void);
 extern int flags;
 extern int failed;
 extern int processed;
-
+extern int ext_counter;
+extern char arr_ext[MAXEXT][5];
 
 
 void print_help(void)
@@ -56,6 +57,7 @@ void print_help(void)
   puts(" -u  As -a, and Update stale checksum");
   puts(" -f  As -a, Force overwrite existing checksum");
   puts(" -c  Check file against stored checksum; stale CRC's are omitted");
+  puts(" -e  Assumes -c; omit extension; one extension per option; eg -c -e xls -e xlt");
   puts(" -p  Print CRC64 checksum; stale CRC's are omitted; Add -d to print stale and missing CRC's");
   puts(" -v  Verbose.  Print more information");
   puts(" -x  Remove stored CRC64 checksum");
@@ -69,9 +71,10 @@ void print_help(void)
 int main(int argc, char *argv[])
 {
   int optch = 0;
+  extern char *optarg;
 
   // get option characters (returns -1 if all are retrieved) 
-  while (( optch = getopt(argc, argv,"ahufcpvxrd") ) != -1)
+  while (( optch = getopt(argc, argv,"ahe:ufcpvxrd") ) != -1)
   {
     switch (optch)
     {
@@ -87,6 +90,15 @@ int main(int argc, char *argv[])
       case 'c' :
 	    flags |= CHECK;
 	    break;
+
+      case 'e' :
+            flags |= OMIT;
+            flags |= CHECK;
+            if (ext_counter < MAXEXT)
+              {
+                strcpy(arr_ext[ext_counter++], optarg);
+              }
+            break;
 
       case 'v' :
 	    flags |= VERBOSE;
@@ -124,6 +136,13 @@ int main(int argc, char *argv[])
 	    break;
     } //switch
   } //while
+
+
+/*  for (int i = 0; i < ext_counter; i++)
+  {
+    printf("arg=%s\n", arr_ext[i]);
+  }*/
+
 
   // no arguments are passed
   if (argc <=1)

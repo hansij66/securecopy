@@ -49,9 +49,13 @@
 #include "crc64.h"
 #include "crcsum.h"
 
-int flags = 0;
-int processed = 0;
-int failed = 0;
+int  flags = 0;
+int  processed = 0;
+int  failed = 0;
+int  ext_counter = 0;
+char arr_ext[MAXEXT][5];
+
+
 
 ////////////////////////////////////////////////////////////
 // Check if CRC64 attribute is present.
@@ -529,6 +533,47 @@ int processFile(const char *filename)
   {
     if ( IsFreshCRC(filename) )
     {
+      // check if extension to be ommitted
+      if (flags & OMIT)
+      {
+        // copy filename
+        char *buffer;
+        buffer = malloc(strlen(filename) + 1);
+        strcpy(buffer, filename);
+
+        char* p = NULL;
+        char* prev_p = NULL;
+        p = strtok(buffer, ".");
+        while (p != NULL)
+        {
+          if (prev_p != NULL)
+            free(prev_p);
+            prev_p = NULL;
+
+          prev_p = malloc(strlen(p) + 1);
+          strcpy(prev_p, p);
+          p = strtok (NULL, ".");
+        }
+        free(buffer);
+        buffer = NULL;
+
+        for (int i = 0; i < ext_counter; i++)
+        {
+          if (strcmp(arr_ext[i], prev_p) == 0)
+          {
+            if (flags & VERBOSE)
+            {
+              printStatus(filename, " OMIT ", GREEN);
+            }
+            processed++;
+            free(prev_p);
+            prev_p = NULL;
+            return true;
+          }
+        }
+        free(prev_p);
+        prev_p = NULL;
+      }
       if (CalculateCRC64(filename) == getCRC(filename))
       {
         if (flags & VERBOSE)
