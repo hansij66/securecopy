@@ -2,7 +2,16 @@
 
 crccp and crcmv are based on GNU coreutils and add crc checksum functionality to cp and mv commands. 
 Checksums can optionally be stored in the file's xattr. 
+Checksum is generated on source file and verified agains destination file
+
 The command crcsum can be used for further checksum analysis/verification, or for storing a checksum in the xattr of all files in a directory or filesystem.
+I mount my filesystems with "mount -t ext4 -o noatime -o user_xattr <device> <dir>" or specify user_xattr in fstab under options.
+
+
+A use case:
+- I run "crcsum -u -r ." on my home directory before daily backup; I have xattr enabled on my filesystems, checksums are embedded in all files and storeed in the backup.
+- I run once a month (cronjob) "crcsum -c -r <backupdestination>" to verify if backup is healthy
+==> I do run once or twice a year into a corrupt file (bit rot?); ofcourse your luck varies with quality of HD's and size of your backups 
 
 
 ## Getting Started
@@ -11,12 +20,12 @@ This package is tested on Debian buster
 
 ### Prerequisites
 
-* Test if [GNU Coreutils 8.31](https://ftp.gnu.org/gnu/coreutils/coreutils-8.31.tar.xz) can be build 
+* Test if [GNU Coreutils 8.32](https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz) can be build and fix any build issues 
 * automake-1.15
 
 ### Installing
 
-* Download source
+* Download securecopy sources
 * Adapt "TARGETDIR="/opt" in "build-secure-copy", point to location where crccp, crcmv and crcsum should be located
 * sudo ./build-secure-copy: this will download coreutils package, apply patch files, build and copy target files to "TARGETDIR"
 * The other coreutils tools are not installed!
@@ -68,6 +77,7 @@ Options :
 -u  As -a, and Update stale checksum
 -f  As -a, Force overwrite existing checksum
 -c  Check file against stored checksum; stale CRC's are omitted
+-e  Assumes -c; omit files with specified extension; one extension per option; eg -e xls -e xlt
 -p  Print CRC64 checksum; stale CRC's are omitted; Add -d to print stale and missing CRC's
 -v  Verbose.  Print more information
 -x  Remove stored CRC64 checksum
@@ -85,4 +95,6 @@ Relevant additional or extended flags for crccp and crcmv (compared to cp, mv)
 ```
 After a copy or move, integrity of file can be checked (again) with crcsum -c -r \<directory\>
 
-If a file with crc storedd in xattr has been changed afterwards, crc is flagged as stale, and ignored.
+If a file with crc stored in its xattr has been changed afterwards, the crc is flagged as stale, and ignored (based on timestamps)
+
+Note: Microsoft Excel files (on Windows) are known to change the file content but not the timestamp if you just open the excel file for reading and close without saving. You can use crcsum -e xls to ignore excel files.
