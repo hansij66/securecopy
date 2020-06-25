@@ -26,7 +26,7 @@ COREUTILS="coreutils-8.32"
 
 # required on debian buster
 # Can be commented-out after first run
-apt-get install automake-1.15 texinfo
+apt-get install automake-1.15 texinfo libattr1-dev
 
 # Coreutils
 # Can be commented-out after first run
