@@ -1,6 +1,13 @@
---- cp.c	2019-01-05 11:36:22.000000000 +0100
-+++ crccp.c	2020-01-11 12:26:00.147729953 +0100
-@@ -41,12 +41,14 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cp.c	2021-09-24 13:31:05.000000000 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/crccp.c	2021-11-14 12:33:01.335353961 +0100
+@@ -34,26 +34,28 @@
+ #include "quote.h"
+ #include "stat-time.h"
+ #include "utimens.h"
+ #include "acl.h"
+ 
+ #if ! HAVE_LCHOWN
+ # define lchown(name, uid, gid) chown (name, uid, gid)
  #endif
  
  /* The official name of this program (e.g., no 'g' prefix).  */
@@ -17,7 +24,21 @@
  
  /* Used by do_copy, make_dir_parents_private, and re_protect
     to keep a list of leading directories whose protections
-@@ -110,6 +112,7 @@
+    need to be fixed after copying. */
+ struct dir_attr
+ {
+   struct stat st;
+   bool restore_mode;
+   size_t slash_offset;
+   struct dir_attr *next;
+@@ -103,20 +105,21 @@
+   REFLINK_AUTO, REFLINK_ALWAYS, REFLINK_NEVER
+ };
+ ARGMATCH_VERIFY (reflink_type_string, reflink_type);
+ 
+ static struct option const long_opts[] =
+ {
+   {"archive", no_argument, NULL, 'a'},
    {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
    {"backup", optional_argument, NULL, 'b'},
    {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
@@ -25,7 +46,21 @@
    {"dereference", no_argument, NULL, 'L'},
    {"force", no_argument, NULL, 'f'},
    {"interactive", no_argument, NULL, 'i'},
-@@ -164,6 +167,11 @@
+   {"link", no_argument, NULL, 'l'},
+   {"no-clobber", no_argument, NULL, 'n'},
+   {"no-dereference", no_argument, NULL, 'P'},
+   {"no-preserve", required_argument, NULL, NO_PRESERVE_ATTRIBUTES_OPTION},
+   {"no-target-directory", no_argument, NULL, 'T'},
+   {"one-file-system", no_argument, NULL, 'x'},
+   {"parents", no_argument, NULL, PARENTS_OPTION},
+@@ -157,20 +160,25 @@
+ 
+       emit_mandatory_arg_note ();
+ 
+       fputs (_("\
+   -a, --archive                same as -dR --preserve=all\n\
+       --attributes-only        don't copy the file data, just the attributes\n\
+       --backup[=CONTROL]       make a backup of each existing destination file\
  \n\
    -b                           like --backup but does not accept an argument\n\
        --copy-contents          copy contents of special files when recursive\n\
@@ -37,7 +72,21 @@
    -d                           same as --no-dereference --preserve=links\n\
  "), stdout);
        fputs (_("\
-@@ -785,6 +793,8 @@
+   -f, --force                  if an existing destination file cannot be\n\
+                                  opened, remove it and try again (this option\n\
+                                  is ignored when the -n option is also used)\n\
+   -i, --interactive            prompt before overwrite (overrides a previous -n\
+ \n\
+                                   option)\n\
+   -H                           follow command-line symbolic links in SOURCE\n\
+@@ -782,20 +790,22 @@
+     }
+ 
+   return ok;
+ }
+ 
+ static void
+ cp_option_init (struct cp_options *x)
  {
    cp_options_default (x);
    x->copy_as_regular = true;
@@ -46,7 +95,21 @@
    x->dereference = DEREF_UNDEFINED;
    x->unlink_dest_before_opening = false;
    x->unlink_dest_after_failed_open = false;
-@@ -950,7 +960,7 @@
+   x->hard_link = false;
+   x->interactive = I_UNSPECIFIED;
+   x->move_mode = false;
+   x->install_mode = false;
+   x->one_file_system = false;
+   x->reflink_mode = REFLINK_AUTO;
+ 
+@@ -947,21 +957,21 @@
+   set_program_name (argv[0]);
+   setlocale (LC_ALL, "");
+   bindtextdomain (PACKAGE, LOCALEDIR);
+   textdomain (PACKAGE);
+ 
+   atexit (close_stdin);
+ 
    selinux_enabled = (0 < is_selinux_enabled ());
    cp_option_init (&x);
  
@@ -55,7 +118,21 @@
                             long_opts, NULL))
           != -1)
      {
-@@ -990,6 +1000,32 @@
+       switch (c)
+         {
+         case SPARSE_OPTION:
+           x.sparse_mode = XARGMATCH ("--sparse", optarg,
+                                      sparse_type_string, sparse_type);
+           break;
+ 
+@@ -987,20 +997,46 @@
+           x.reduce_diagnostics = true;
+           x.recursive = true;
+           break;
+ 
+         case 'b':
+           make_backups = true;
+           if (optarg)
              version_control_string = optarg;
            break;
  
@@ -88,3 +165,10 @@
          case ATTRIBUTES_ONLY_OPTION:
            x.data_copy_required = false;
            break;
+ 
+         case COPY_CONTENTS_OPTION:
+           copy_contents = true;
+           break;
+ 
+         case 'd':
+           x.preserve_links = true;

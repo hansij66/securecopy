@@ -1,3 +1,9 @@
+2021-11-14
+	Version 9.0.0
+
+	- Upgraded to coreutils version 9.0
+	- Changed version numbering. x.y.z: x.y refer to coreutils version. z to securecopy increment version.
+
 2020-06-14
 	version 8.32 (coreutiles) - 2.1.1 (securecopy)
 

@@ -1,6 +1,13 @@
---- cu-progs.mk.org	2019-03-10 23:26:56.000000000 +0100
-+++ cu-progs.mk	2019-12-30 19:46:38.935949709 +0100
-@@ -112,3 +112,7 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cu-progs.mk.org	2021-11-14 12:33:01.331354029 +0100
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cu-progs.mk	2021-11-14 12:33:01.335353961 +0100
+@@ -105,10 +105,14 @@
+ default__progs += src/tsort
+ default__progs += src/tty
+ default__progs += src/uname
+ default__progs += src/unexpand
+ default__progs += src/uniq
+ default__progs += src/unlink
+ default__progs += src/vdir
  default__progs += src/wc
  default__progs += src/whoami
  default__progs += src/yes

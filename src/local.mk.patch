@@ -1,6 +1,13 @@
---- local.mk.org	2019-03-04 09:36:33.000000000 +0100
-+++ local.mk	2019-12-30 19:54:44.255981037 +0100
-@@ -216,12 +216,19 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/local.mk.org	2021-11-14 12:33:01.331354029 +0100
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/local.mk	2021-11-14 12:33:01.339353893 +0100
+@@ -209,26 +209,33 @@
+ src_wc_LDADD = $(LDADD)
+ src_who_LDADD = $(LDADD)
+ src_whoami_LDADD = $(LDADD)
+ src_yes_LDADD = $(LDADD)
+ 
+ # Synonyms.  Recall that Automake transliterates '[' and '/' to '_'.
+ src___LDADD = $(src_test_LDADD)
  src_dir_LDADD = $(src_ls_LDADD)
  src_vdir_LDADD = $(src_ls_LDADD)
  
@@ -20,18 +27,46 @@
  
  # for eaccess, euidaccess
  copy_ldadd += $(LIB_EACCESS)
-@@ -328,6 +335,8 @@
+ remove_ldadd += $(LIB_EACCESS)
+ src_sort_LDADD += $(LIB_EACCESS)
+ src_test_LDADD += $(LIB_EACCESS)
+ 
+ # for selinux use
+ copy_ldadd += $(LIB_SELINUX)
+ src_chcon_LDADD += $(LIB_SELINUX)
+@@ -325,20 +332,22 @@
+   `sed -n '/.*COPYRIGHT_YEAR = \([0-9][0-9][0-9][0-9]\) };/s//\1/p' \
+     $(top_srcdir)/lib/version-etc.c`
+ 
+ selinux_sources = \
+   src/selinux.c \
+   src/selinux.h
+ 
  copy_sources = \
    src/copy.c \
    src/cp-hash.c \
 +  src/crcsum.c \
 +  src/crc64.c \
-   src/extent-scan.c \
-   src/extent-scan.h \
    src/force-link.c \
-@@ -421,6 +430,10 @@
+   src/force-link.h
  
- src_ginstall_CPPFLAGS = -DENABLE_MATCHPATHCON=1 $(AM_CPPFLAGS)
+ # Use 'ginstall' in the definition of PROGRAMS and in dependencies to avoid
+ # confusion with the 'install' target.  The install rule transforms 'ginstall'
+ # to install before applying any user-specified name transformations.
+ 
+ # Don't apply prefix transformations to libstdbuf shared lib
+ # as that's not generally needed, and we need to reference the
+ # name directly in LD_PRELOAD etc.  In general it's surprising
+@@ -422,20 +431,24 @@
+ src_libcksum_pclmul_a_CFLAGS = -mavx -mpclmul $(AM_CFLAGS)
+ endif
+ 
+ src_base64_SOURCES = src/basenc.c
+ src_base64_CPPFLAGS = -DBASE_TYPE=64 $(AM_CPPFLAGS)
+ src_base32_SOURCES = src/basenc.c
+ src_base32_CPPFLAGS = -DBASE_TYPE=32 $(AM_CPPFLAGS)
+ src_basenc_SOURCES = src/basenc.c
+ src_basenc_CPPFLAGS = -DBASE_TYPE=42 $(AM_CPPFLAGS)
  
 +src_crccp_SOURCES  = src/crccp.c $(copy_sources) $(selinux_sources)
 +src_crcmv_SOURCES  = src/crcmv.c src/remove.c $(copy_sources) $(selinux_sources)
@@ -40,3 +75,10 @@
  src_expand_SOURCES = src/expand.c src/expand-common.c
  src_unexpand_SOURCES = src/unexpand.c src/expand-common.c
  
+ src_wc_SOURCES = src/wc.c
+ if USE_AVX2_WC_LINECOUNT
+ noinst_LIBRARIES += src/libwc_avx2.a
+ src_libwc_avx2_a_SOURCES = src/wc_avx2.c
+ wc_avx2_ldadd = src/libwc_avx2.a
+ src_wc_LDADD += $(wc_avx2_ldadd)
+ src_libwc_avx2_a_CFLAGS = -mavx2 $(AM_CFLAGS)

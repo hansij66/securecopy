@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Target coreutils (tested version)
+COREUTILS="coreutils-9.0"
+
+# Internal for this script
+CURRENTDIR=${PWD}
+
+PATCHDIR="${CURRENTDIR}/src"
+COREUTILSSRCDIR="${CURRENTDIR}/${COREUTILS}/src"
+
+#echo ${PATCHDIR}
+#echo ${COREUTILSSRCDIR}
+
+diff -U 10 ${COREUTILSSRCDIR}/copy.h.org ${COREUTILSSRCDIR}/copy.h > ${PATCHDIR}/copy.h.patch
+diff -U 10 ${COREUTILSSRCDIR}/copy.c.org ${COREUTILSSRCDIR}/copy.c > ${PATCHDIR}/copy.c.patch
+diff -U 10 ${COREUTILSSRCDIR}/cp.c ${COREUTILSSRCDIR}/crccp.c > ${PATCHDIR}/crccp.c.patch
+diff -U 10 ${COREUTILSSRCDIR}/mv.c ${COREUTILSSRCDIR}/crcmv.c > ${PATCHDIR}/crcmv.c.patch
+diff -U 10 ${COREUTILSSRCDIR}/cu-progs.mk.org ${COREUTILSSRCDIR}/cu-progs.mk > ${PATCHDIR}/cu-progs.mk.patch
+diff -U 10 ${COREUTILSSRCDIR}/local.mk.org ${COREUTILSSRCDIR}/local.mk > ${PATCHDIR}/local.mk.patch
+diff -U 10 ${CURRENTDIR}/${COREUTILS}/m4/cu-progs.m4.org ${CURRENTDIR}/${COREUTILS}/m4/cu-progs.m4 > ${PATCHDIR}/cu-progs.m4.patch

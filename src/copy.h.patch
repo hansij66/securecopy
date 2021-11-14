@@ -1,6 +1,13 @@
---- copy.h.org	2019-01-05 11:36:22.000000000 +0100
-+++ copy.h	2019-12-30 19:38:49.163345346 +0100
-@@ -102,6 +102,12 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/copy.h.org	2021-11-14 12:33:01.331354029 +0100
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/copy.h	2021-11-14 12:33:01.335353961 +0100
+@@ -97,20 +97,26 @@
+    following programs: mv (when rename doesn't work), cp, install.
+    So, if you add a new member, be sure to initialize it in
+    mv.c, cp.c, and install.c.  */
+ struct cp_options
+ {
+   enum backup_type backup_type;
+ 
    /* How to handle symlinks in the source.  */
    enum Dereference_symlink dereference;
  
@@ -13,3 +20,10 @@
    /* This value is used to determine whether to prompt before removing
       each existing destination file.  It works differently depending on
       whether move_mode is set.  See code/comments in copy.c.  */
+   enum Interactive interactive;
+ 
+   /* Control creation of sparse files.  */
+   enum Sparse_type sparse_mode;
+ 
+   /* Set the mode of the destination file to exactly this value
+      if SET_MODE is nonzero.  */

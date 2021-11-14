@@ -1,6 +1,13 @@
---- mv.c	2019-01-05 11:36:22.000000000 +0100
-+++ crcmv.c	2020-01-11 12:26:12.303334554 +0100
-@@ -35,13 +35,17 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/mv.c	2021-09-24 13:31:05.000000000 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/crcmv.c	2021-11-14 12:33:01.335353961 +0100
+@@ -28,41 +28,46 @@
+ #include "copy.h"
+ #include "cp-hash.h"
+ #include "die.h"
+ #include "error.h"
+ #include "filenamecat.h"
+ #include "remove.h"
+ #include "renameatu.h"
  #include "root-dev-ino.h"
  #include "priv-set.h"
  
@@ -20,7 +27,14 @@
  
  /* For long options that have no equivalent short option, use a
     non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-@@ -56,6 +60,7 @@
+ enum
+ {
+   STRIP_TRAILING_SLASHES_OPTION = CHAR_MAX + 1
+ };
+ 
+ /* Remove any trailing slashes from each SOURCE argument.  */
+ static bool remove_trailing_slashes;
+ 
  static struct option const long_options[] =
  {
    {"backup", optional_argument, NULL, 'b'},
@@ -28,7 +42,21 @@
    {"context", no_argument, NULL, 'Z'},
    {"force", no_argument, NULL, 'f'},
    {"interactive", no_argument, NULL, 'i'},
-@@ -110,6 +115,8 @@
+   {"no-clobber", no_argument, NULL, 'n'},
+   {"no-target-directory", no_argument, NULL, 'T'},
+   {"strip-trailing-slashes", no_argument, NULL, STRIP_TRAILING_SLASHES_OPTION},
+   {"suffix", required_argument, NULL, 'S'},
+   {"target-directory", required_argument, NULL, 't'},
+   {"update", no_argument, NULL, 'u'},
+   {"verbose", no_argument, NULL, 'v'},
+@@ -103,20 +108,22 @@
+   x->preserve_all_root = false;
+ }
+ 
+ static void
+ cp_option_init (struct cp_options *x)
+ {
+   bool selinux_enabled = (0 < is_selinux_enabled ());
  
    cp_options_default (x);
    x->copy_as_regular = false;  /* FIXME: maybe make this an option */
@@ -37,7 +65,21 @@
    x->reflink_mode = REFLINK_AUTO;
    x->dereference = DEREF_NEVER;
    x->unlink_dest_before_opening = false;
-@@ -305,6 +312,11 @@
+   x->unlink_dest_after_failed_open = false;
+   x->hard_link = false;
+   x->interactive = I_UNSPECIFIED;
+   x->move_mode = true;
+   x->install_mode = false;
+   x->one_file_system = false;
+   x->preserve_ownership = true;
+@@ -298,20 +305,25 @@
+       fputs (_("\
+ Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
+ "), stdout);
+ 
+       emit_mandatory_arg_note ();
+ 
+       fputs (_("\
        --backup[=CONTROL]       make a backup of each existing destination file\
  \n\
    -b                           like --backup but does not accept an argument\n\
@@ -49,7 +91,21 @@
    -f, --force                  do not prompt before overwriting\n\
    -i, --interactive            prompt before overwrite\n\
    -n, --no-clobber             do not overwrite an existing file\n\
-@@ -361,7 +373,7 @@
+ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
+ "), stdout);
+       fputs (_("\
+       --strip-trailing-slashes  remove any trailing slashes from each SOURCE\n\
+                                  argument\n\
+   -S, --suffix=SUFFIX          override the usual backup suffix\n\
+ "), stdout);
+@@ -354,30 +366,55 @@
+   bindtextdomain (PACKAGE, LOCALEDIR);
+   textdomain (PACKAGE);
+ 
+   atexit (close_stdin);
+ 
+   cp_option_init (&x);
+ 
    /* Try to disable the ability to unlink a directory.  */
    priv_set_remove_linkdir ();
  
@@ -58,7 +114,9 @@
           != -1)
      {
        switch (c)
-@@ -371,6 +383,31 @@
+         {
+         case 'b':
+           make_backups = true;
            if (optarg)
              version_control_string = optarg;
            break;
@@ -90,3 +148,10 @@
          case 'f':
            x.interactive = I_ALWAYS_YES;
            break;
+         case 'i':
+           x.interactive = I_ASK_USER;
+           break;
+         case 'n':
+           x.interactive = I_ALWAYS_NO;
+           break;
+         case STRIP_TRAILING_SLASHES_OPTION:

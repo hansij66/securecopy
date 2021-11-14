@@ -1,6 +1,13 @@
---- cu-progs.m4.org	2019-03-10 23:26:56.000000000 +0100
-+++ cu-progs.m4	2019-12-30 19:43:20.638468574 +0100
-@@ -94,6 +94,9 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/m4/cu-progs.m4.org	2021-11-14 12:33:01.339353893 +0100
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/m4/cu-progs.m4	2021-11-14 13:01:28.062031883 +0100
+@@ -87,20 +87,23 @@
+ gl_ADD_PROG([optional_bin_progs], [tsort])
+ gl_ADD_PROG([optional_bin_progs], [tty])
+ gl_ADD_PROG([optional_bin_progs], [uname])
+ gl_ADD_PROG([optional_bin_progs], [unexpand])
+ gl_ADD_PROG([optional_bin_progs], [uniq])
+ gl_ADD_PROG([optional_bin_progs], [unlink])
+ gl_ADD_PROG([optional_bin_progs], [vdir])
  gl_ADD_PROG([optional_bin_progs], [wc])
  gl_ADD_PROG([optional_bin_progs], [whoami])
  gl_ADD_PROG([optional_bin_progs], [yes])
@@ -10,3 +17,10 @@
  no_install_progs_default='arch coreutils hostname'
  # Given the name of a variable containing a space-separated
  # list of install-by-default programs and the actual list of
+ # do-not-install-by-default programs, modify the former variable
+ # to reflect any "do-install" and "don't-install" requests.
+ # That is, add any program specified via --enable-install-program,
+ # and remove any program specified via --enable-no-install-program.
+ # Note how the second argument below is a literal, with ","
+ # separators.  That is required due to the way the macro works,
+ # and since the corresponding ./configure option argument is

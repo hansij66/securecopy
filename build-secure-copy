@@ -10,10 +10,8 @@
 # local system directory where crccp, crcmv and crcsum will be copied
 # remainder ofr core utils will not be installed!
 # Change to meet local system
-TARGETDIR="/opt/ijntema/bin"
-
-
-
+TARGETDIR="/opt/ansible/roles/cron-files/files/system/bin/"
+LOCALTARGETDIR="/opt/bin/"
 
 # Internal for this script
 CURRENTDIR=${PWD}
@@ -22,11 +20,19 @@ CURRENTDIR=${PWD}
 BINDIR="${CURRENTDIR}/bin"
 
 # Target coreutils (tested version)
-COREUTILS="coreutils-8.32"
+COREUTILS="coreutils-9.0"
 
 # required on debian buster
 # Can be commented-out after first run
-apt-get install automake-1.15 texinfo libattr1-dev
+apt-get update && apt-get install -y --no-install-recommends -qq \
+        procps \
+        git \
+        build-essential \
+        automake-1.15 \
+        texinfo \
+        ca-certificates \
+        wget \
+        libattr1-dev
 
 # Coreutils
 # Can be commented-out after first run
@@ -51,12 +57,12 @@ cp cp.c crccp.c
 cp copy.c copy.c.org
 cp copy.h copy.h.org
 cp cu-progs.mk cu-progs.mk.org
-cp local.mk local.mk.patch.org
+cp local.mk local.mk.org
 
 patch copy.c ${CURRENTDIR}/src/copy.c.patch
 patch copy.h ${CURRENTDIR}/src/copy.h.patch
-patch crccp.c ${CURRENTDIR}/src/crccp.patch
-patch crcmv.c ${CURRENTDIR}/src/crcmv.patch
+patch crccp.c ${CURRENTDIR}/src/crccp.c.patch
+patch crcmv.c ${CURRENTDIR}/src/crcmv.c.patch
 patch cu-progs.mk ${CURRENTDIR}/src/cu-progs.mk.patch
 patch local.mk ${CURRENTDIR}/src/local.mk.patch
 
@@ -90,11 +96,19 @@ echo "crccp crcmv and crcsum copied to ${BINDIR}"
 
 
 #ADD TEST TEST TEST
-
 while true; do
     read -p "Do you wish to install securecopy tools in ${TARGETDIR}?" yn
     case $yn in
         [Yy]* ) sudo /bin/cp ${BINDIR}/* ${TARGETDIR} ; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install securecopy tools in ${LOCALTARGETDIR}?" yn
+    case $yn in
+        [Yy]* ) sudo /bin/cp ${BINDIR}/* ${LOCALTARGETDIR} ; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac

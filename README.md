@@ -16,7 +16,7 @@ A use case:
 
 ## Getting Started
 
-This package is tested on Debian buster
+This package is tested on Debian buster & bullseye
 
 ### Prerequisites
 
@@ -29,6 +29,7 @@ This package is tested on Debian buster
 * Adapt "TARGETDIR="/opt" in "build-secure-copy", point to location where crccp, crcmv and crcsum should be located
 * sudo ./build-secure-copy: this will download coreutils package, apply patch files, build and copy target files to "TARGETDIR"
 * The other coreutils tools are not installed!
+* "build-secure-copy" works for Debian OS-ses; adapt for other distributions (specifically, install required packages)
 
 ## Deployment
 
@@ -40,8 +41,9 @@ Add to ~/.bashrc:"
 
 
 ## Versioning
-* V2.1: based on core utils v8.32
-* V2.0: based on core utils v8.31 
+* V9.0.0; based on coreutils v9.0; First 2 decimals of version number refer to coreutils version
+* V2.1: based on coreutils v8.32
+* V2.0: based on coreutils v8.31 
 * [Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)
 
 ## Authors

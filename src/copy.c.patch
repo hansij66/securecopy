@@ -1,16 +1,36 @@
---- copy.c.org	2020-01-14 20:37:56.970714772 +0100
-+++ copy.c	2020-01-14 21:36:55.223397266 +0100
-@@ -66,6 +66,8 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/copy.c.org	2021-11-14 12:33:01.327354098 +0100
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/copy.c	2021-11-14 12:33:01.331354029 +0100
+@@ -58,20 +58,21 @@
+ #include "savedir.h"
+ #include "stat-size.h"
+ #include "stat-time.h"
+ #include "utimecmp.h"
+ #include "utimens.h"
+ #include "write-any-file.h"
+ #include "areadlink.h"
  #include "yesno.h"
+ #include "xstrtol.h"
  #include "selinux.h"
- 
 +#include "crcsum.h"
-+
+ 
  #if USE_XATTR
  # include <attr/error_context.h>
  # include <attr/libattr.h>
-@@ -1029,10 +1031,67 @@
+ # include <stdarg.h>
+ # include "verror.h"
+ #endif
+ 
+ #if HAVE_LINUX_FALLOC_H
+ # include <linux/falloc.h>
+@@ -1130,24 +1131,84 @@
+   char *name_alloc = NULL;
+   int dest_desc;
+   int dest_errno;
+   int source_desc;
+   mode_t src_mode = src_sb->st_mode;
+   struct stat sb;
    struct stat src_open_sb;
+   union scan_inference scan_inference;
    bool return_val = true;
    bool data_copy_required = x->data_copy_required;
 +  t_crc64 crc_src = 0;
@@ -40,7 +60,7 @@
 +  {
 +    if ( !IsFreshCRC(src_name) ) // UPDATE CRC when stale
 +    {
-+      // suppress errors writing crc in souce xattr, as file can be read only
++      // suppress errors writing crc in source xattr, as file can be read only or filesystem might not support xattr
 +      bool bError = false;
 +
 +      // CRC is stale & get new CRC
@@ -74,10 +94,27 @@
 +    }
 +  }
 +
++
++
++
    if (source_desc < 0)
      {
        error (0, errno, _("cannot open %s for reading"), quoteaf (src_name));
-@@ -1410,6 +1469,99 @@
+       return false;
+     }
+ 
+   if (fstat (source_desc, &src_open_sb) != 0)
+     {
+       error (0, errno, _("cannot fstat %s"), quoteaf (src_name));
+       return_val = false;
+@@ -1495,20 +1556,117 @@
+       error (0, errno, _("failed to close %s"), quoteaf (dst_name));
+       return_val = false;
+     }
+ close_src_desc:
+   if (close (source_desc) < 0)
+     {
+       error (0, errno, _("failed to close %s"), quoteaf (src_name));
        return_val = false;
      }
  
@@ -87,9 +124,10 @@
 +  {
 +    t_crc64 crc_des = 0;
 +
-+    //ONLY for testing
-+    //printf("WAIT\n");
-+    //getchar();
++    // ONLY for testing
++    //
++    // printf("WAIT\n");
++    // getchar();
 +
 +    crc_des = CalculateCRC64(dst_name);
 +
@@ -160,15 +198,18 @@
 +    {
 +      if ( !IsFreshCRC(dst_name) ) // UPDATE CRC when stale
 +      {
-+        // suppress errors writing crc in souce xattr, as destination file can be read only (-r--r--r--)
++        // suppress errors writing crc in destination xattr, as destination filesystem might not support xattr
 +        bool bError = false;
 +
 +        // CRC is stale, write the already calculated crc
 +        if ( !bPutCRC(dst_name, &crc_des, bError) )
 +        {
-+          // as this is not a fatal error, mark it as yellow
-+          printStatus(dst_name, "FAILED to update CRC in xattr", YELLOW);
-+          RESET_TEXT();
++          if (x->verbose)
++          {
++            // as this is not a fatal error, mark it as yellow
++            printStatus(dst_name, "INFO: Cannot store/update destination CRC in xattr; xattr not supported on filesystem?", GREEN);
++            RESET_TEXT();
++          }
 +        }
 +      }
 +    }
@@ -177,3 +218,10 @@
    free (buf_alloc);
    free (name_alloc);
    return return_val;
+ }
+ 
+ /* Return true if it's ok that the source and destination
+    files are the 'same' by some measure.  The goal is to avoid
+    making the 'copy' operation remove both copies of the file
+    in that case, while still allowing the user to e.g., move or
+    copy a regular file onto a symlink that points to it.
