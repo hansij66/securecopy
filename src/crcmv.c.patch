@@ -22,7 +22,7 @@
    proper_name ("David MacKenzie"), \
 -  proper_name ("Jim Meyering")
 +  proper_name ("Jim Meyering"), \
-+  proper_name ("Hans IJntema (checksum functionality)")
++  proper_name ("Checksum functionality only: Hans IJntema")
 +
  
  /* For long options that have no equivalent short option, use a

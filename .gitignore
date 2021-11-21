@@ -1,5 +1,6 @@
 *.tar.xz
 coreutils-8.31/*
 coreutils-8.32/*
+coreutils-*/*
 notes.txt
 build-beta

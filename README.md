@@ -20,7 +20,7 @@ This package is tested on Debian buster & bullseye
 
 ### Prerequisites
 
-* Test if [GNU Coreutils 8.32](https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz) can be build and fix any build issues 
+* Test if [GNU Coreutils 9.0](https://ftp.gnu.org/gnu/coreutils/coreutils-9.0.tar.xz) can be build and fix any build issues 
 * automake-1.15
 
 ### Installing
@@ -39,11 +39,15 @@ Add to ~/.bashrc:"
 * alias crcsum='TARGETDIR/crcsum'
 * (replace TARGETDIR with actual location)
 
+## Usage
+* cp -c sourcefile destination # will re-use crc stored with sourcefile (if any)
+* cp -cx sourcefile destination # will re-created crc of sourcefile befie copy is started
 
 ## Versioning
 * V9.0.0; based on coreutils v9.0; First 2 decimals of version number refer to coreutils version
 * V2.1: based on coreutils v8.32
 * V2.0: based on coreutils v8.31 
+* V9.0.x: based on coreutils V9.0
 * [Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)
 
 ## Authors
