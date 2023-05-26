@@ -1,5 +1,5 @@
---- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/m4/cu-progs.m4.org	2021-11-14 12:33:01.339353893 +0100
-+++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/m4/cu-progs.m4	2021-11-14 13:01:28.062031883 +0100
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/m4/cu-progs.m4.org	2023-04-29 19:28:37.724014763 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/m4/cu-progs.m4	2023-04-29 19:28:37.724014763 +0200
 @@ -87,20 +87,23 @@
  gl_ADD_PROG([optional_bin_progs], [tsort])
  gl_ADD_PROG([optional_bin_progs], [tty])

@@ -1,6 +1,6 @@
---- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cu-progs.mk.org	2021-11-14 12:33:01.331354029 +0100
-+++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cu-progs.mk	2021-11-14 12:33:01.335353961 +0100
-@@ -105,10 +105,14 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/cu-progs.mk.org	2023-04-29 19:28:37.712015139 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/cu-progs.mk	2023-04-29 19:28:37.720014888 +0200
+@@ -105,10 +105,15 @@
  default__progs += src/tsort
  default__progs += src/tty
  default__progs += src/uname
@@ -11,7 +11,9 @@
  default__progs += src/wc
  default__progs += src/whoami
  default__progs += src/yes
++# HIJN
 +default__progs += src/crccp
 +default__progs += src/crcsum
 +default__progs += src/crcmv
-+
++# END HIJN
+\ No newline at end of file

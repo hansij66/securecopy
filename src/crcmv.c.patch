@@ -1,7 +1,6 @@
---- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/mv.c	2021-09-24 13:31:05.000000000 +0200
-+++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/crcmv.c	2021-11-14 12:33:01.335353961 +0100
-@@ -28,41 +28,46 @@
- #include "copy.h"
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/mv.c	2023-04-10 12:14:08.000000000 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/crcmv.c	2023-04-29 19:43:02.116990278 +0200
+@@ -30,27 +30,32 @@
  #include "cp-hash.h"
  #include "die.h"
  #include "error.h"
@@ -9,12 +8,15 @@
  #include "remove.h"
  #include "renameatu.h"
  #include "root-dev-ino.h"
+ #include "targetdir.h"
  #include "priv-set.h"
  
++/* HIJN */
 +#include "crcsum.h"
 +
  /* The official name of this program (e.g., no 'g' prefix).  */
 -#define PROGRAM_NAME "mv"
++/* HIJN */
 +#define PROGRAM_NAME "crcmv"
  
  #define AUTHORS \
@@ -23,33 +25,40 @@
 -  proper_name ("Jim Meyering")
 +  proper_name ("Jim Meyering"), \
 +  proper_name ("Checksum functionality only: Hans IJntema")
-+
  
  /* For long options that have no equivalent short option, use a
     non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
  enum
  {
-   STRIP_TRAILING_SLASHES_OPTION = CHAR_MAX + 1
+   DEBUG_OPTION = CHAR_MAX + 1,
+   NO_COPY_OPTION,
+   STRIP_TRAILING_SLASHES_OPTION
  };
  
- /* Remove any trailing slashes from each SOURCE argument.  */
- static bool remove_trailing_slashes;
+@@ -60,20 +65,22 @@
+ };
+ static enum Update_type const update_type[] =
+ {
+   UPDATE_ALL, UPDATE_NONE, UPDATE_OLDER,
+ };
+ ARGMATCH_VERIFY (update_type_string, update_type);
  
  static struct option const long_options[] =
  {
    {"backup", optional_argument, NULL, 'b'},
++  /* HIJN */
 +  {"crc", optional_argument, NULL, 'c'},
    {"context", no_argument, NULL, 'Z'},
+   {"debug", no_argument, NULL, DEBUG_OPTION},
    {"force", no_argument, NULL, 'f'},
    {"interactive", no_argument, NULL, 'i'},
    {"no-clobber", no_argument, NULL, 'n'},
+   {"no-copy", no_argument, NULL, NO_COPY_OPTION},
    {"no-target-directory", no_argument, NULL, 'T'},
    {"strip-trailing-slashes", no_argument, NULL, STRIP_TRAILING_SLASHES_OPTION},
    {"suffix", required_argument, NULL, 'S'},
    {"target-directory", required_argument, NULL, 't'},
-   {"update", no_argument, NULL, 'u'},
-   {"verbose", no_argument, NULL, 'v'},
-@@ -103,20 +108,22 @@
+@@ -116,20 +123,24 @@
    x->preserve_all_root = false;
  }
  
@@ -60,8 +69,10 @@
  
    cp_options_default (x);
    x->copy_as_regular = false;  /* FIXME: maybe make this an option */
++  /* HIJN */
 +  x->crc = false;
 +  x->crc_with_xattr = false;
++  /* END HIJN */
    x->reflink_mode = REFLINK_AUTO;
    x->dereference = DEREF_NEVER;
    x->unlink_dest_before_opening = false;
@@ -72,7 +83,7 @@
    x->install_mode = false;
    x->one_file_system = false;
    x->preserve_ownership = true;
-@@ -298,20 +305,25 @@
+@@ -262,20 +273,25 @@
        fputs (_("\
  Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
  "), stdout);
@@ -85,20 +96,20 @@
    -b                           like --backup but does not accept an argument\n\
 +  -c --crc[=x]                 check whether copy was successfull with checksum comparison\n\
 +                               x: use (fresh) checksum stored in xattr or if not present,\n\
-+                               store checksum in xattr\n\
++                               store checksum in xattr of src and des\n\
 +                               See also tool <crcsum> in same secure copy package\n\
 +                               implies --preserve=xattr\n\
+ "), stdout);
+       fputs (_("\
+       --debug                  explain how a file is copied.  Implies -v\n\
+ "), stdout);
+       fputs (_("\
    -f, --force                  do not prompt before overwriting\n\
    -i, --interactive            prompt before overwrite\n\
    -n, --no-clobber             do not overwrite an existing file\n\
  If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
  "), stdout);
-       fputs (_("\
-       --strip-trailing-slashes  remove any trailing slashes from each SOURCE\n\
-                                  argument\n\
-   -S, --suffix=SUFFIX          override the usual backup suffix\n\
- "), stdout);
-@@ -354,30 +366,55 @@
+@@ -330,30 +346,60 @@
    bindtextdomain (PACKAGE, LOCALEDIR);
    textdomain (PACKAGE);
  
@@ -110,6 +121,7 @@
    priv_set_remove_linkdir ();
  
 -  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
++  /* HIJN */
 +  while ((c = getopt_long (argc, argv, "bc::fint:uvS:TZ", long_options, NULL))
           != -1)
      {
@@ -120,6 +132,8 @@
            if (optarg)
              version_control_string = optarg;
            break;
++
++        /* HIJN */
 +        case 'c':
 +          if (optarg)
 +          {
@@ -145,6 +159,8 @@
 +            x.crc_with_xattr = false;
 +          }
 +          break;
++        /* END HIJN */
++
          case 'f':
            x.interactive = I_ALWAYS_YES;
            break;
@@ -154,4 +170,4 @@
          case 'n':
            x.interactive = I_ALWAYS_NO;
            break;
-         case STRIP_TRAILING_SLASHES_OPTION:
+         case DEBUG_OPTION:

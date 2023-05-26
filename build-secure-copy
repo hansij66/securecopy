@@ -1,14 +1,16 @@
 #!/bin/bash
 
+#set -e
+
 # run as root
 
-# assumption is that coreutils-8.31.tar.xz is located in current directory
+# assumption is that coreutils-X.Y.tar.xz is located in current directory
 
 # TODO https://www.tecmint.com/advanced-copy-command-shows-progress-bar-while-copying-files/
 
 
 # local system directory where crccp, crcmv and crcsum will be copied
-# remainder ofr core utils will not be installed!
+# remainder of core utils will not be installed!
 # Change to meet local system
 TARGETDIR="/opt/ansible/roles/cron-files/files/system/bin/"
 LOCALTARGETDIR="/opt/bin/"
@@ -20,15 +22,15 @@ CURRENTDIR=${PWD}
 BINDIR="${CURRENTDIR}/bin"
 
 # Target coreutils (tested version)
-COREUTILS="coreutils-9.0"
+COREUTILS="coreutils-9.3"
 
-# required on debian buster
+# required on debian
 # Can be commented-out after first run
 apt-get update && apt-get install -y --no-install-recommends -qq \
         procps \
         git \
         build-essential \
-        automake-1.15 \
+        automake \
         texinfo \
         ca-certificates \
         wget \
@@ -40,11 +42,27 @@ wget -v -O ${CURRENTDIR}/${COREUTILS}.tar.xz  https://ftp.gnu.org/gnu/coreutils/
 
 # Clean source directory
 rm -rf ${CURRENTDIR}/${COREUTILS}
+
 rm ${CURRENTDIR}/bin/*
+
 
 # Extract Coreutils
 cd ${CURRENTDIR}
 tar -xvf ${COREUTILS}.tar.xz
+
+
+# PRE-REQUISITE - CAN I BUILD STOCK CORE UTILS?
+# COMMENT WHEN SUCCESSFULL
+#cd ${CURRENTDIR}/${COREUTILS}
+#export FORCE_UNSAFE_CONFIGURE=1
+#./bootstrap
+#./configure
+#make
+#exit
+
+#############################################################################################
+## START SECURE COPY
+
 
 # Install Securecopy files
 cd ${CURRENTDIR}/src
@@ -59,6 +77,8 @@ cp copy.h copy.h.org
 cp cu-progs.mk cu-progs.mk.org
 cp local.mk local.mk.org
 
+
+cd ${CURRENTDIR}/${COREUTILS}/src
 patch copy.c ${CURRENTDIR}/src/copy.c.patch
 patch copy.h ${CURRENTDIR}/src/copy.h.patch
 patch crccp.c ${CURRENTDIR}/src/crccp.c.patch
@@ -69,6 +89,8 @@ patch local.mk ${CURRENTDIR}/src/local.mk.patch
 cd ${CURRENTDIR}/${COREUTILS}/m4
 cp cu-progs.m4 cu-progs.m4.org
 patch cu-progs.m4 ${CURRENTDIR}/src/cu-progs.m4.patch
+
+#exit
 
 # Combine version number from coreutils and securecopy
 version_crc=$( cat ${CURRENTDIR}/.version )

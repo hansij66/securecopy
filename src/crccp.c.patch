@@ -1,17 +1,18 @@
---- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/cp.c	2021-09-24 13:31:05.000000000 +0200
-+++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/crccp.c	2021-11-14 12:33:01.335353961 +0100
-@@ -34,26 +34,28 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/cp.c	2023-04-10 12:14:08.000000000 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/crccp.c	2023-04-29 19:42:51.173332110 +0200
+@@ -31,26 +31,28 @@
+ #include "error.h"
+ #include "filenamecat.h"
+ #include "ignore-value.h"
  #include "quote.h"
  #include "stat-time.h"
+ #include "targetdir.h"
  #include "utimens.h"
  #include "acl.h"
  
- #if ! HAVE_LCHOWN
- # define lchown(name, uid, gid) chown (name, uid, gid)
- #endif
- 
  /* The official name of this program (e.g., no 'g' prefix).  */
 -#define PROGRAM_NAME "cp"
++/* HIJN */
 +#define PROGRAM_NAME "crccp"
  
  #define AUTHORS \
@@ -20,7 +21,6 @@
 -  proper_name ("Jim Meyering")
 +  proper_name ("Jim Meyering"), \
 +  proper_name ("Checksum functionality only: Hans IJntema")
-+
  
  /* Used by do_copy, make_dir_parents_private, and re_protect
     to keep a list of leading directories whose protections
@@ -31,10 +31,10 @@
    bool restore_mode;
    size_t slash_offset;
    struct dir_attr *next;
-@@ -103,20 +105,21 @@
-   REFLINK_AUTO, REFLINK_ALWAYS, REFLINK_NEVER
+@@ -111,20 +113,22 @@
+   UPDATE_ALL, UPDATE_NONE, UPDATE_OLDER,
  };
- ARGMATCH_VERIFY (reflink_type_string, reflink_type);
+ ARGMATCH_VERIFY (update_type_string, update_type);
  
  static struct option const long_opts[] =
  {
@@ -42,7 +42,9 @@
    {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
    {"backup", optional_argument, NULL, 'b'},
    {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
++  /* HIJN */
 +  {"crc", optional_argument, NULL, 'c'},
+   {"debug", no_argument, NULL, DEBUG_OPTION},
    {"dereference", no_argument, NULL, 'L'},
    {"force", no_argument, NULL, 'f'},
    {"interactive", no_argument, NULL, 'i'},
@@ -52,8 +54,7 @@
    {"no-preserve", required_argument, NULL, NO_PRESERVE_ATTRIBUTES_OPTION},
    {"no-target-directory", no_argument, NULL, 'T'},
    {"one-file-system", no_argument, NULL, 'x'},
-   {"parents", no_argument, NULL, PARENTS_OPTION},
-@@ -157,20 +160,25 @@
+@@ -166,20 +170,25 @@
  
        emit_mandatory_arg_note ();
  
@@ -66,20 +67,20 @@
        --copy-contents          copy contents of special files when recursive\n\
 +  -c --crc[=x]                 check whether copy was successfull with checksum comparison\n\
 +                               x: use (fresh) checksum stored in xattr or if not present,\n\
-+                               store checksum in xattr\n\
++                               store checksum in xattr of src and des\n\
 +                               See also tool <crcsum> in same secure copy package\n\
 +                               implies --preserve=all\n\
    -d                           same as --no-dereference --preserve=links\n\
+ "), stdout);
+       fputs (_("\
+       --debug                  explain how a file is copied.  Implies -v\n\
  "), stdout);
        fputs (_("\
    -f, --force                  if an existing destination file cannot be\n\
                                   opened, remove it and try again (this option\n\
                                   is ignored when the -n option is also used)\n\
    -i, --interactive            prompt before overwrite (overrides a previous -n\
- \n\
-                                   option)\n\
-   -H                           follow command-line symbolic links in SOURCE\n\
-@@ -782,20 +790,22 @@
+@@ -806,20 +815,24 @@
      }
  
    return ok;
@@ -90,8 +91,10 @@
  {
    cp_options_default (x);
    x->copy_as_regular = true;
++  /* HIJN */
 +  x->crc = false;
 +  x->crc_with_xattr = false;
++  /* END HIJN */
    x->dereference = DEREF_UNDEFINED;
    x->unlink_dest_before_opening = false;
    x->unlink_dest_after_failed_open = false;
@@ -102,7 +105,7 @@
    x->one_file_system = false;
    x->reflink_mode = REFLINK_AUTO;
  
-@@ -947,21 +957,21 @@
+@@ -971,21 +984,22 @@
    set_program_name (argv[0]);
    setlocale (LC_ALL, "");
    bindtextdomain (PACKAGE, LOCALEDIR);
@@ -114,6 +117,7 @@
    cp_option_init (&x);
  
 -  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
++  /* HIJN */
 +  while ((c = getopt_long (argc, argv, "abc::dfHilLnprst:uvxPRS:TZ",
                             long_opts, NULL))
           != -1)
@@ -125,7 +129,7 @@
                                       sparse_type_string, sparse_type);
            break;
  
-@@ -987,20 +997,46 @@
+@@ -1011,20 +1025,48 @@
            x.reduce_diagnostics = true;
            x.recursive = true;
            break;
@@ -136,6 +140,7 @@
              version_control_string = optarg;
            break;
  
++        /* HIJN */
 +        case 'c':
 +          if (optarg)
 +          {
@@ -161,14 +166,15 @@
 +            x.crc_with_xattr = false;
 +          }
 +          break;
++        /* END HIJN */
 +
          case ATTRIBUTES_ONLY_OPTION:
            x.data_copy_required = false;
            break;
  
-         case COPY_CONTENTS_OPTION:
-           copy_contents = true;
+         case DEBUG_OPTION:
+           x.debug = x.verbose = true;
            break;
  
-         case 'd':
-           x.preserve_links = true;
+         case COPY_CONTENTS_OPTION:
+           copy_contents = true;

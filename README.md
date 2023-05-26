@@ -39,7 +39,8 @@ Add to `~/.bashrc:`
 * `cp -cx sourcefile destination` # will re-created crc of sourcefile befie copy is started
 
 ## Versioning
-* V9.0.0; based on coreutils v9.0; First 2 decimals of version number refer to coreutils version
+* V9.3.0: based on coreutils v9.3; Added simple test
+* V9.0.0: based on coreutils v9.0; First 2 decimals of version number refer to coreutils version
 * V2.1: based on coreutils v8.32
 * V2.0: based on coreutils v8.31 
 * [Previous versions](https://sourceforge.net/projects/crcsum/https://sourceforge.net/projects/crcsum/)

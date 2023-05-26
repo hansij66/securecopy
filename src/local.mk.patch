@@ -1,6 +1,6 @@
---- /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/local.mk.org	2021-11-14 12:33:01.331354029 +0100
-+++ /home/ijntema/programming/securecopy/core-utils-based/V9.0.0/coreutils-9.0/src/local.mk	2021-11-14 12:33:01.339353893 +0100
-@@ -209,26 +209,33 @@
+--- /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/local.mk.org	2023-04-29 19:28:37.712015139 +0200
++++ /home/ijntema/programming/securecopy/core-utils-based/V9.3.0-beta/coreutils-9.3/src/local.mk	2023-04-29 19:28:37.724014763 +0200
+@@ -212,27 +212,35 @@
  src_wc_LDADD = $(LDADD)
  src_who_LDADD = $(LDADD)
  src_whoami_LDADD = $(LDADD)
@@ -21,20 +21,22 @@
  
  src_mv_LDADD += $(remove_ldadd)
  src_rm_LDADD += $(remove_ldadd)
+ 
 +src_crccp_LDADD  += $(copy_ldadd)
 +src_crcmv_LDADD  += $(copy_ldadd)
 +src_crcmv_LDADD  += $(remove_ldadd)
- 
++
  # for eaccess, euidaccess
- copy_ldadd += $(LIB_EACCESS)
- remove_ldadd += $(LIB_EACCESS)
- src_sort_LDADD += $(LIB_EACCESS)
- src_test_LDADD += $(LIB_EACCESS)
+ copy_ldadd += $(EUIDACCESS_LIBGEN)
+ remove_ldadd += $(EUIDACCESS_LIBGEN)
+ src_sort_LDADD += $(EUIDACCESS_LIBGEN)
+ src_test_LDADD += $(EUIDACCESS_LIBGEN)
  
  # for selinux use
  copy_ldadd += $(LIB_SELINUX)
  src_chcon_LDADD += $(LIB_SELINUX)
-@@ -325,20 +332,22 @@
+ src_ginstall_LDADD += $(LIB_SELINUX)
+@@ -331,20 +339,22 @@
    `sed -n '/.*COPYRIGHT_YEAR = \([0-9][0-9][0-9][0-9]\) };/s//\1/p' \
      $(top_srcdir)/lib/version-etc.c`
  
@@ -57,7 +59,7 @@
  # Don't apply prefix transformations to libstdbuf shared lib
  # as that's not generally needed, and we need to reference the
  # name directly in LD_PRELOAD etc.  In general it's surprising
-@@ -422,20 +431,24 @@
+@@ -431,20 +441,24 @@
  src_libcksum_pclmul_a_CFLAGS = -mavx -mpclmul $(AM_CFLAGS)
  endif
  

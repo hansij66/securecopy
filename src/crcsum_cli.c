@@ -41,7 +41,7 @@ extern char arr_ext[MAXEXT][5];
 void print_help(void)
 {
   printf("CRCSUM: A file checksum utility.\tVersion : %s\n",VERSION);
-  puts("(C) Hans IJntema (2014)");
+  puts("(C) Hans IJntema (2023)");
   puts("");
   puts("CRCSUM stores a CRC checksum and file mtime as an extended attribute.");
   puts("CRCSUM checks stored CRC checksum against actual CRC checksum");
