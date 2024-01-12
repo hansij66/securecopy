@@ -17,7 +17,7 @@ A use case:
 This package is tested on Debian buster & bullseye
 
 ### Prerequisites
-* Test if [GNU Coreutils 9.0](https://ftp.gnu.org/gnu/coreutils/coreutils-9.0.tar.xz) can be build and fix any build issues 
+* Test if [GNU Coreutils 9.3](https://ftp.gnu.org/gnu/coreutils/coreutils-9.3.tar.xz) can be build and fix any build issues 
 * automake-1.15
 
 ### Installing
