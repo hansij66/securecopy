@@ -123,16 +123,17 @@
            if (optarg)
              version_control_string = optarg;
            break;
++        /* HIJN */
 +        case 'c':
 +          if (optarg)
 +          {
 +            if ( strcmp( optarg, "x") == 0 )
 +            {
-+//            x.crc = false;
-+//			  x.crc_with_xattr = true;
-+              x.crc = true;
-+			  x.crc_with_xattr = false;
-+			  
++              // flag: -cx
++              x.crc = false;
++              x.crc_with_xattr = true;
++
++              // will this stick if --no-preserve=xattr?
 +              x.preserve_mode = true;
 +              x.preserve_timestamps = true;
 +              x.preserve_ownership = true;
@@ -143,14 +144,15 @@
 +              x.preserve_xattr = true;
 +            }
 +          }
-+          else
++          else // end commandline option = -cx
 +          {
-+//            x.crc = true;
-+//            x.crc_with_xattr = false;
-+            x.crc = false;
-+            x.crc_with_xattr = true;
++            // flag: -c
++            x.crc = true;
++            x.crc_with_xattr = false;
 +          }
 +          break;
++        /* END HIJN */
++
          case 'f':
            x.interactive = I_ALWAYS_YES;
            break;
